@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Create thermal and spectral compositions.">
-<title>Kroma Studio</title>
+<title>kroma</title>
 <!--
 Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree)
 
@@ -166,14 +166,14 @@ input[type=number],select{width:100%;min-width:0;height:32px;border:1px solid #3
 </style>
 </head>
 <body>
-<header class="top"><h1>Kroma Studio</h1></header>
+<header class="top"><h1>kroma</h1></header>
 <main class="layout">
 <section class="workspace" data-theme="dark" aria-label="Artwork preview">
   <div class="stage">
     <div class="artwork" id="artwork"><canvas id="art" role="img" tabindex="0" aria-label="Generated spectral artwork. Drag to move, or use arrow keys." aria-describedby="drag-help"></canvas></div>
   </div>
 </section>
-<aside class="sidebar" aria-label="Kroma Studio controls"><div class="controls-scroll">
+<aside class="sidebar" aria-label="kroma controls"><div class="controls-scroll">
 <section class="group">
     <div class="group-header"><h2>Shapes</h2><button class="text-button" id="reset">Reset</button></div>
     <details class="shape-gallery"><summary>Browse shapes</summary><div class="preset-grid" id="presets"></div></details>
@@ -1350,7 +1350,7 @@ el('export').addEventListener('click',()=>{
   setStatus('Preparing '+format.toUpperCase()+'…');
   requestAnimationFrame(()=>setTimeout(()=>{
     try {
-      const filename = 'kromatik-shapez-'+cfg.type+'-'+cfg.seed+'-'+factor+'x.'+format;
+      const filename = 'kroma-'+cfg.type+'-'+cfg.seed+'-'+factor+'x.'+format;
       if(format==='svg') {
         const svg = vectorSVG(cfg,position,effect,factor);
         download(new Blob([svg],{type:'image/svg+xml'}),filename);
@@ -1433,7 +1433,7 @@ videoButton.addEventListener('click',()=>{
       if(!chunks.length) {finish('Could not record the video. Try again.');return;}
       const mime = recorder.mimeType || videoType;
       const extension = mime.includes('mp4') ? '.mp4' : '.webm';
-      download(new Blob(chunks,{type:mime}),'kromatik-shapez-'+cfg.type+'-'+cfg.seed+extension);
+      download(new Blob(chunks,{type:mime}),'kroma-'+cfg.type+'-'+cfg.seed+extension);
       finish('Video ready.');
     });
     recorder.start();
