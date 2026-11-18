@@ -1,4 +1,4 @@
-# Kroma Studio
+# kroma
 
 Create soft abstract shapes and animated color compositions in your browser.
 
