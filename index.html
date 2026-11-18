@@ -180,6 +180,9 @@ input[type=number],select{width:100%;min-width:0;height:32px;border:1px solid #3
     <div class="actions space"><button class="button" id="random">Shuffle</button></div>
 </section>
 <div class="quick-actions"><button class="button" id="random-colors">Randomize colors</button><label class="background-toggle"><span>Remove background</span><input id="no-bg" type="checkbox" role="switch"></label></div>
+<details class="settings-section"><summary>Colors</summary><div class="section-body">
+    <div class="layer-colors" id="layer-colors"></div>
+</div></details>
 <details class="settings-section"><summary>Shape</summary><div class="section-body">
     <div class="row"><label for="symmetry"><span id="symmetry-label">Symmetry</span><output for="symmetry" id="symmetry-value"></output></label><input id="symmetry" type="range" min="3" max="12"></div>
     <div class="row"><label for="scale">Scale <output for="scale" id="scale-value"></output></label><input id="scale" type="range" min="55" max="200"></div>
@@ -1031,6 +1034,11 @@ el('random').addEventListener('click',()=>{
 });
 function applyColors(colors) {
   settings.colors = colors;
+  for(const [index,row] of Array.from(el('layer-colors').children).entries()) {
+    for(const input of row.querySelectorAll('input')) {
+      if(document.activeElement!==input) input.value = colors[index].toUpperCase();
+    }
+  }
   redraw();
   if(thumbnailsScheduled) return;
   thumbnailsScheduled = requestAnimationFrame(()=>{
@@ -1068,9 +1076,55 @@ el('random-colors').addEventListener('click',()=>{
     return hslColor(tint,saturation,lightness[index]);
   });
   applyColors(colors);
-  setStatus('Colors randomized.');
 });
 
+for(const [index,name] of layerNames.entries()) {
+  const row = document.createElement('div');
+  row.className = 'layer-color';
+  const nameLabel = document.createElement('label');
+  const picker = document.createElement('input');
+  picker.type = 'color';
+  picker.id = 'layer-picker-'+index;
+  picker.value = settings.colors[index];
+  picker.setAttribute('aria-label',name+' color picker');
+  nameLabel.htmlFor = picker.id;
+  nameLabel.textContent = name;
+  const hex = document.createElement('input');
+  hex.type = 'text';
+  hex.value = settings.colors[index].toUpperCase();
+  hex.maxLength = 7;
+  hex.spellcheck = false;
+  hex.autocomplete = 'off';
+  hex.setAttribute('aria-label',name+' hex code');
+  function changeColor(color) {
+    applyColors(settings.colors.map((value,i)=>i===index ? color : value));
+  }
+  picker.addEventListener('input',()=>{
+    hex.value = picker.value.toUpperCase();
+    changeColor(picker.value);
+  });
+  hex.addEventListener('input',()=>{
+    const value = hex.value.trim().replace(/^#/,'');
+    const valid = /^[0-9a-f]{6}$/i.test(value);
+    hex.setAttribute('aria-invalid',!valid);
+    if(valid) {
+      picker.value = '#'+value.toLowerCase();
+      changeColor(picker.value);
+    }
+  });
+  hex.addEventListener('blur',()=>{
+    let value = hex.value.trim().replace(/^#/,'');
+    if(/^[0-9a-f]{3}$/i.test(value)) {
+      value = value.split('').map(character=>character+character).join('');
+      changeColor('#'+value.toLowerCase());
+    }
+    hex.value = settings.colors[index].toUpperCase();
+    hex.setAttribute('aria-invalid','false');
+    picker.value = settings.colors[index];
+  });
+  row.append(nameLabel,picker,hex);
+  el('layer-colors').append(row);
+}
 for(const theme of ['light','dark']) {
   el('canvas-'+theme).addEventListener('click',()=>{
     document.querySelector('.workspace').dataset.theme = theme;
